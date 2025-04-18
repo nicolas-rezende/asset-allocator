@@ -5,7 +5,6 @@ import {
   AllocationInput,
   ContributionResult,
 } from "./allocation-calculator";
-import { readConfigFile } from "./config-loader";
 
 export function displaySingleAllocation(
   input: AllocationInput
@@ -13,7 +12,7 @@ export function displaySingleAllocation(
   const { assetLabels, assets, percentages, totalContribution } = input;
 
   console.log(
-    chalk.bold.blue("\n--- Cálculo de Alocação para Próximo Aporte ---")
+    chalk.bold.blue("\n--- Allocation Calculation for Next Contribution ---")
   );
 
   const result = calculateOptimalContributions(input);
@@ -25,13 +24,13 @@ export function displaySingleAllocation(
 
   const table = new Table({
     head: [
-      chalk.yellow("Ativo"),
-      chalk.blue("Valor Atual"),
-      chalk.blue("Prop. Atual"),
-      chalk.green("Prop. Desejada"),
-      chalk.cyan("Contribuição"),
-      chalk.magenta("Valor Após Aporte"),
-      chalk.magenta("Prop. Após Aporte"),
+      chalk.yellow("Asset"),
+      chalk.blue("Current Value"),
+      chalk.blue("Current Prop."),
+      chalk.green("Target Prop."),
+      chalk.cyan("Contribution"),
+      chalk.magenta("Value After"),
+      chalk.magenta("Prop. After"),
     ],
   });
 
@@ -68,13 +67,13 @@ export function simulateUntilTarget(
 ): void {
   console.log(
     chalk.bold.blue(
-      `\n--- Simulação até Atingir Alocação (Tolerância: ${tolerance}%) ---`
+      `\n--- Simulation until Target Allocation (Tolerance: ${tolerance}%) ---`
     )
   );
 
   const futureTable = new Table({
     head: [
-      chalk.yellow("Iteração"),
+      chalk.yellow("Iteration"),
       ...initialInput.assetLabels.map((label) => chalk.blue(`% ${label}`)),
     ],
   });
@@ -121,11 +120,11 @@ export function simulateUntilTarget(
 
   console.log(futureTable.toString());
   console.log(
-    chalk.yellow(`\nSimulação finalizada após ${iteration} iterações.`)
+    chalk.yellow(`\nSimulation finished after ${iteration} iterations.`)
   );
   console.log(
     chalk.green.bold(
-      `Total investido na simulação: R$ ${totalInvested.toFixed(2)}`
+      `Total invested in simulation: R$ ${totalInvested.toFixed(2)}`
     )
   );
 }

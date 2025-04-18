@@ -19,7 +19,7 @@ export function readConfigFile():
     };
   } catch (error: any) {
     console.error(
-      chalk.red.bold("Erro ao ler o arquivo de configuração:"),
+      chalk.red.bold("Error reading configuration file:"),
       error.message
     );
     return null;

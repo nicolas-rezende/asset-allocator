@@ -21,7 +21,7 @@ export function calculateOptimalContributions(
     assets.length !== input.assetLabels.length
   ) {
     throw new Error(
-      "Os arrays de labels, ativos e percentuais devem ter o mesmo comprimento."
+      "The labels, assets, and percentages arrays must have the same length."
     );
   }
 
@@ -30,7 +30,7 @@ export function calculateOptimalContributions(
     percentages.some((percentage) => percentage < 0 || percentage > 1)
   ) {
     throw new Error(
-      "Os ativos devem ser não negativos e os percentuais devem estar entre 0 e 1."
+      "Assets must be non-negative and percentages must be between 0 and 1."
     );
   }
 
