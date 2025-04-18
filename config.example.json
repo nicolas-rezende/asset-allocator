@@ -1,7 +1,21 @@
 {
-  "assetLabels": ["Asset A", "Asset B", "Asset C"],
-  "assets": [10000, 20000, 5000],
-  "percentages": [0.4, 0.4, 0.2],
+  "assets": [
+    {
+      "name": "Asset A Name",
+      "currentValue": 10000,
+      "targetPercentage": 0.4
+    },
+    {
+      "name": "Asset B Name",
+      "currentValue": 20000,
+      "targetPercentage": 0.4
+    },
+    {
+      "name": "Asset C Name",
+      "currentValue": 5000,
+      "targetPercentage": 0.2
+    }
+  ],
   "totalContribution": 2000,
   "simulationTolerance": 0.5
 }
