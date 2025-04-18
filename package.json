@@ -1,0 +1,25 @@
+{
+  "name": "asset-allocator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "cli-table3": "^0.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "@vitest/ui": "^3.1.1",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1"
+  }
+}

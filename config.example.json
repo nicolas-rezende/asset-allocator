@@ -1,0 +1,7 @@
+{
+  "assetLabels": ["Asset A", "Asset B", "Asset C"],
+  "assets": [10000, 20000, 5000],
+  "percentages": [0.4, 0.4, 0.2],
+  "totalContribution": 2000,
+  "simulationTolerance": 0.5
+}

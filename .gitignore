@@ -1,0 +1,60 @@
+# Logs
+logs
+*.log
+pnpm-debug.log*
+
+# Dependencies
+node_modules
+pnpm-lock.yaml
+
+# Build output
+dist
+build
+
+# IDE specific files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Personal files (sensitive information, API keys, etc.)
+.env
+.env.*
+credentials.json
+config.json
+
+# Coverage reports
+coverage
+*.nyc_output
+.temp_output
+
+# Compiled files (if your build process creates other types)
+*.pyc
+*.class
+*.jar
+*.war
+*.exe
+*.dll
+
+# Packages for distribution
+pkg
+
+# Temporary files
+tmp
+temp
+*.swp
+*.swo
+*~
+.#*
+
+# Yarn specific (if you used Yarn before)
+yarn.lock
+
+# npm specific (if you used npm before)
+package-lock.json
