@@ -1,8 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   calculateOptimalContributions,
   AllocationInput,
 } from "../src/allocation-calculator";
+import { readConfigFile } from "../src/config-loader";
+import * as fs from "fs";
+
+// Mocking the fs module for config-loader tests
+vi.mock("fs");
 
 describe("calculateOptimalContributions", () => {
   it("should calculate correct contributions for a simple case", () => {
@@ -65,7 +70,7 @@ describe("calculateOptimalContributions", () => {
       totalContribution: 100,
     } as any; // Forçar o erro de tipo para o teste
     expect(() => calculateOptimalContributions(input)).toThrowError(
-      "Os arrays de labels, ativos e percentuais devem ter o mesmo comprimento."
+      "The labels, assets, and percentages arrays must have the same length."
     );
   });
 
@@ -79,7 +84,7 @@ describe("calculateOptimalContributions", () => {
     expect(() =>
       calculateOptimalContributions(negativeAssetInput)
     ).toThrowError(
-      "Os ativos devem ser não negativos e os percentuais devem estar entre 0 e 1."
+      "Assets must be non-negative and percentages must be between 0 and 1."
     );
 
     const invalidPercentageInput: AllocationInput = {
@@ -91,7 +96,140 @@ describe("calculateOptimalContributions", () => {
     expect(() =>
       calculateOptimalContributions(invalidPercentageInput)
     ).toThrowError(
-      "Os ativos devem ser não negativos e os percentuais devem estar entre 0 e 1."
+      "Assets must be non-negative and percentages must be between 0 and 1."
     );
+  });
+});
+
+describe("readConfigFile", () => {
+  it("should return null and log an error if config.json is not found", () => {
+    (fs.readFileSync as any).mockImplementation(() => {
+      throw new Error("ENOENT: no such file or directory");
+    });
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    const config = readConfigFile();
+
+    expect(config).toBeNull();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Error reading configuration file:",
+      "ENOENT: no such file or directory"
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it("should return null and log an error if config.json has invalid JSON", () => {
+    (fs.readFileSync as any).mockImplementation(() => '{ "assets": ');
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    const config = readConfigFile();
+
+    expect(config).toBeNull();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Error reading configuration file:",
+      "Unexpected end of JSON input"
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it("should return null and log an error if required fields are missing", () => {
+    (fs.readFileSync as any).mockImplementation(() =>
+      JSON.stringify({ assets: [] })
+    );
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    const config = readConfigFile();
+
+    expect(config).toBeNull();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Error: Invalid structure in config.json. The "assets" array and "totalContribution" are required.'
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it("should return null and log an error if asset objects are missing required properties", () => {
+    (fs.readFileSync as any).mockImplementation(() =>
+      JSON.stringify({ assets: [{ name: "A" }], totalContribution: 100 })
+    );
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    const config = readConfigFile();
+
+    expect(config).toBeNull();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Error: Each asset in the "assets" array must have "name", "currentValue", and "targetPercentage".'
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it("should successfully parse a valid config.json", () => {
+    const mockConfig = {
+      assets: [
+        { name: "A", currentValue: 100, targetPercentage: 0.5 },
+        { name: "B", currentValue: 100, targetPercentage: 0.5 },
+      ],
+      totalContribution: 50,
+      simulationTolerance: 0.2,
+    };
+    (fs.readFileSync as any).mockImplementation(() =>
+      JSON.stringify(mockConfig)
+    );
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    const config = readConfigFile();
+
+    expect(config).toEqual({
+      assetLabels: ["A", "B"],
+      assets: [100, 100],
+      percentages: [0.5, 0.5],
+      totalContribution: 50,
+      simulationTolerance: 0.2,
+    });
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it("should use default simulationTolerance if not provided", () => {
+    const mockConfig = {
+      assets: [
+        { name: "A", currentValue: 100, targetPercentage: 0.5 },
+        { name: "B", currentValue: 100, targetPercentage: 0.5 },
+      ],
+      totalContribution: 50,
+    };
+    (fs.readFileSync as any).mockImplementation(() =>
+      JSON.stringify(mockConfig)
+    );
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    const config = readConfigFile();
+
+    expect(config).toEqual({
+      assetLabels: ["A", "B"],
+      assets: [100, 100],
+      percentages: [0.5, 0.5],
+      totalContribution: 50,
+      simulationTolerance: 0.5, // Default value
+    });
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+
+    consoleErrorSpy.mockRestore();
   });
 });
