@@ -1,18 +1,37 @@
-import { readConfigFile } from "./config-loader";
+import path from "node:path";
+import fs from "node:fs";
+import type {
+  CalculateOptimalContributionsInput,
+  CalculateOptimalContributionsOutput,
+} from "./allocation-calculator";
 import { displaySingleAllocation, simulateUntilTarget } from "./cli-output";
-import { AllocationInput } from "./allocation-calculator";
 
-const config = readConfigFile();
+main();
 
-if (config) {
-  const firstAllocationResult = displaySingleAllocation(config);
+async function main() {
+  const configPath = path.join(process.cwd(), "config.json");
+  const configFile = fs.readFileSync(configPath, "utf-8");
+  const rawConfig: CalculateOptimalContributionsInput = JSON.parse(configFile);
 
-  const futureAllocationInput: AllocationInput = {
-    assetLabels: config.assetLabels,
-    assets: firstAllocationResult.updatedAssets,
-    percentages: config.percentages,
-    totalContribution: config.totalContribution,
+  const allocationResult: CalculateOptimalContributionsOutput =
+    await displaySingleAllocation(rawConfig);
+
+  // Prepare input for simulation, using the share prices from the allocation result
+  const simulationInput = {
+    assets: rawConfig.assets.map((asset) => {
+      if (asset.type === "shares") {
+        const matchingResult = allocationResult.find(
+          (res) => res.name === asset.name
+        );
+        return {
+          ...asset,
+          sharePrice: matchingResult?.sharePrice,
+        };
+      }
+      return asset;
+    }),
+    totalContribution: rawConfig.totalContribution,
   };
 
-  simulateUntilTarget(futureAllocationInput, config.simulationTolerance);
+  simulateUntilTarget(simulationInput, 0.25);
 }

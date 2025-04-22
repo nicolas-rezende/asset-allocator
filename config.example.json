@@ -1,21 +1,26 @@
 {
+  "$schema": "./config.schema.json",
+  "totalContribution": 10000,
   "assets": [
     {
-      "name": "Asset A Name",
-      "currentValue": 10000,
-      "targetPercentage": 0.4
+      "type": "shares",
+      "name": "Apple",
+      "symbol": "AAPL",
+      "shares": 50,
+      "targetPercentage": 0.3
     },
     {
-      "name": "Asset B Name",
-      "currentValue": 20000,
-      "targetPercentage": 0.4
+      "type": "shares",
+      "name": "Microsoft",
+      "symbol": "MSFT",
+      "shares": 30,
+      "targetPercentage": 0.6
     },
     {
-      "name": "Asset C Name",
-      "currentValue": 5000,
-      "targetPercentage": 0.2
+      "type": "value",
+      "name": "Cash",
+      "currentValue": 1000,
+      "targetPercentage": 0.1
     }
-  ],
-  "totalContribution": 2000,
-  "simulationTolerance": 0.5
+  ]
 }
